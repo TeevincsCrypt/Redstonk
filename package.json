@@ -1,0 +1,42 @@
+{
+  "name": "redstonk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RedStonk \u2014 a Solana launchpad that only opens against the day's reddest liquid xStock close.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "scan:configs": "node --env-file-if-exists=.env.local --import tsx scripts/scan-xstock-configs.ts",
+    "platform:create": "node --env-file-if-exists=.env.local --import tsx scripts/create-platform.ts",
+    "simulate:launch": "node --env-file-if-exists=.env.local --import tsx scripts/simulate-launch.ts"
+  },
+  "dependencies": {
+    "@irys/upload": "0.0.15",
+    "@irys/upload-solana": "0.1.8",
+    "@raydium-io/raydium-sdk-v2": "0.2.73-alpha",
+    "@solana/spl-token": "0.4.15",
+    "@solana/wallet-adapter-base": "0.9.28",
+    "@solana/wallet-adapter-phantom": "0.9.30",
+    "@solana/wallet-adapter-react": "0.15.40",
+    "@solana/wallet-adapter-solflare": "0.6.34",
+    "@solana/web3.js": "1.99.0",
+    "bn.js": "5.2.5",
+    "next": "15.5.27",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/bn.js": "5.2.0",
+    "@types/node": "22.20.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
