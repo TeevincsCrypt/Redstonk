@@ -1,0 +1,15 @@
+{
+  "label": "FIXTURE — illustrative closes for offline development. Not market data.",
+  "notice": "Used only when STOCK_DATA_URL is unset and the cluster is not mainnet-beta. The same numbers are served for every session date.",
+  "closes": {
+    "NVDA": { "close": 172.41, "prevClose": 179.98, "volume": 241500000 },
+    "AAPL": { "close": 227.12, "prevClose": 229.65, "volume": 48200000 },
+    "TSLA": { "close": 251.30, "prevClose": 245.66, "volume": 96800000 },
+    "MSFT": { "close": 431.05, "prevClose": 433.71, "volume": 18900000 },
+    "AMZN": { "close": 219.84, "prevClose": 218.95, "volume": 39100000 },
+    "GOOGL": { "close": 196.40, "prevClose": 200.37, "volume": 27600000 },
+    "META": { "close": 742.18, "prevClose": 733.40, "volume": 11200000 },
+    "SPY": { "close": 655.02, "prevClose": 660.31, "volume": 71400000 },
+    "QQQ": { "close": 578.66, "prevClose": 587.49, "volume": 45300000 }
+  }
+}

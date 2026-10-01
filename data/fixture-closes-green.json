@@ -1,0 +1,15 @@
+{
+  "label": "FIXTURE (green-only) — illustrative closes for offline development. Not market data.",
+  "notice": "Select with PRINT_FIXTURE=green. Every name closes flat or up, so there is no red print.",
+  "closes": {
+    "NVDA": { "close": 181.02, "prevClose": 179.98, "volume": 198000000 },
+    "AAPL": { "close": 231.40, "prevClose": 229.65, "volume": 41000000 },
+    "TSLA": { "close": 251.30, "prevClose": 245.66, "volume": 96800000 },
+    "MSFT": { "close": 433.71, "prevClose": 433.71, "volume": 17100000 },
+    "AMZN": { "close": 219.84, "prevClose": 218.95, "volume": 39100000 },
+    "GOOGL": { "close": 201.12, "prevClose": 200.37, "volume": 25300000 },
+    "META": { "close": 742.18, "prevClose": 733.40, "volume": 11200000 },
+    "SPY": { "close": 662.80, "prevClose": 660.31, "volume": 63000000 },
+    "QQQ": { "close": 590.04, "prevClose": 587.49, "volume": 40100000 }
+  }
+}
