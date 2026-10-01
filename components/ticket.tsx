@@ -8,6 +8,7 @@ import { CLUSTER, PLATFORM_ID, explorerAddressUrl } from "@/lib/env";
 import { formatUnits } from "@/lib/format";
 import { curveProgress, poolStage, rateToPercent, RATE_DENOMINATOR } from "@/lib/launchlab-layout";
 import { PairingNote, QuoteDisclaimer } from "./notes";
+import { PageHero } from "./page-hero";
 
 export function TicketView({ mint }: { mint: string }) {
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -44,7 +45,7 @@ export function TicketView({ mint }: { mint: string }) {
   if (!ticket) {
     return (
       <Shell>
-        <p className="kicker text-ink-faint">Reading {CLUSTER}…</p>
+        <p className="flex items-center gap-2 text-sm text-mute"><span className="h-2 w-2 animate-pulse rounded-full bg-brand" aria-hidden />Reading {CLUSTER}…</p>
       </Shell>
     );
   }
@@ -71,25 +72,25 @@ export function TicketView({ mint }: { mint: string }) {
   return (
     <Shell>
       <article>
-        <p className="kicker text-ink-soft">Ticket · {CLUSTER}</p>
+        <p className="eyebrow text-brand">{onRedStonk ? "Listed on RedStonk" : "LaunchLab coin"}</p>
         <div className="mt-2 flex items-start gap-4">
           {offchain?.image && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={offchain.image} alt="" className="h-20 w-20 shrink-0 border border-ink object-cover" />
+            <img src={offchain.image} alt="" className="h-20 w-20 shrink-0 rounded-2xl object-cover ring-1 ring-line" />
           )}
           <div className="min-w-0">
-            <h1 className="text-5xl leading-none font-semibold break-words">{name}</h1>
-            <p className="mt-1 font-mono text-lg">${symbol}</p>
+            <h2 className="text-4xl leading-tight font-semibold tracking-tight break-words md:text-5xl">{name}</h2>
+            <p className="mt-1 inline-block rounded-full bg-blush px-3 py-0.5 font-mono text-sm font-semibold text-brand">${symbol}</p>
           </div>
         </div>
-        {offchain?.description && <p className="mt-3 text-lg leading-snug">{offchain.description}</p>}
+        {offchain?.description && <p className="mt-3 leading-relaxed text-ink-soft">{offchain.description}</p>}
 
         {pool && quote ? (
           <>
-            <section className="mt-6 border-2 border-ink p-4">
+            <section className="card-blush mt-6 p-5">
               <div className="flex items-baseline justify-between">
-                <span className="kicker">Quote</span>
-                <span className="font-mono text-lg">{quote.xStock}</span>
+                <span className="eyebrow text-mute">Quote</span>
+                <span className="font-mono text-lg font-semibold">{quote.xStock}</span>
               </div>
               <Progress
                 stage={poolStage(pool.status)}
@@ -106,8 +107,8 @@ export function TicketView({ mint }: { mint: string }) {
           </>
         ) : (
           <>
-            <div className="mt-6 border border-ink p-4">
-              <p className="text-lg">No LaunchLab pool against a supported quote.</p>
+            <div className="mt-6 rounded-2xl border border-line bg-canvas p-4">
+              <p className="text-lg font-semibold">No LaunchLab pool against a supported quote.</p>
               <p className="mt-1 text-sm text-ink-soft">
                 This mint exists on {CLUSTER}, but RedStonk found no Raydium LaunchLab pool pairing it with any
                 configured xStock. Curve progress cannot be read.
@@ -144,7 +145,7 @@ export function TicketView({ mint }: { mint: string }) {
           <Row k="Cluster" v={CLUSTER} />
         </dl>
         {quoteMint && (quoteMint.freezeAuthority || quoteMint.permanentDelegate || quoteMint.pausable) && (
-          <p className="mt-3 text-xs text-ink-faint">
+          <p className="mt-3 text-xs text-faint">
             The quote token&apos;s issuer keeps{" "}
             {listJoin(
               [
@@ -204,13 +205,13 @@ function Progress({
   return (
     <div className="mt-3">
       <div className="flex items-baseline justify-between">
-        <span className="text-sm">{label}</span>
-        <span className="font-mono tabular text-sm">{(progress * 100).toFixed(1)}%</span>
+        <span className="text-sm font-medium">{label}</span>
+        <span className="font-mono text-sm font-semibold text-brand tabular">{(progress * 100).toFixed(1)}%</span>
       </div>
-      <div className="mt-1 h-3 border border-ink" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
-        <div className="h-full bg-ink" style={{ width: `${Math.max(0, Math.min(100, progress * 100))}%` }} />
+      <div className="mt-2 h-3 overflow-hidden rounded-full bg-white ring-1 ring-[#ffd2d8]" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
+        <div className="h-full rounded-full bg-[linear-gradient(90deg,#ff6b7a,#e61430)]" style={{ width: `${Math.max(0, Math.min(100, progress * 100))}%` }} />
       </div>
-      <p className="mt-1 font-mono text-xs text-ink-soft">
+      <p className="mt-2 font-mono text-xs text-mute">
         {formatUnits(raised, decimals, 4)} of {formatUnits(target, decimals, 4)} {xStock} raised
       </p>
     </div>
@@ -219,8 +220,8 @@ function Progress({
 
 function Row({ k, v, mono = false }: { k: string; v: React.ReactNode; mono?: boolean }) {
   return (
-    <div className="grid grid-cols-[8.5rem_1fr] gap-3 border-b border-ink/20 py-2 text-sm">
-      <dt className="text-ink-soft">{k}</dt>
+    <div className="grid grid-cols-[8rem_1fr] gap-3 border-b border-line py-2.5 text-sm last:border-b-0">
+      <dt className="text-mute">{k}</dt>
       <dd className={`min-w-0 break-words ${mono ? "font-mono text-xs leading-5" : ""}`}>{v}</dd>
     </div>
   );
@@ -228,7 +229,7 @@ function Row({ k, v, mono = false }: { k: string; v: React.ReactNode; mono?: boo
 
 function Addr({ a }: { a: string }) {
   return (
-    <a href={explorerAddressUrl(a)} target="_blank" rel="noreferrer" className="underline decoration-ink/30">
+    <a href={explorerAddressUrl(a)} target="_blank" rel="noreferrer" className="underline decoration-brand/30">
       {a}
     </a>
   );
@@ -236,23 +237,28 @@ function Addr({ a }: { a: string }) {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-xl">
-      {children}
-      <QuoteDisclaimer />
-    </div>
+    <>
+      <PageHero eyebrow={`Ticket · ${CLUSTER}`} title="Coin ticket">
+        Read straight from the chain: the mint, its metadata, and its Raydium LaunchLab pool.
+      </PageHero>
+      <div className="relative z-10 mx-auto -mt-20 max-w-2xl px-4 md:px-8">
+        <div className="card p-5 md:p-8">{children}</div>
+        <QuoteDisclaimer />
+      </div>
+    </>
   );
 }
 
 function Empty({ title, body, mint }: { title: string; body: string; mint?: string }) {
   return (
-    <div className="py-6">
-      <h1 className="text-4xl font-semibold">{title}</h1>
+    <div>
+      <h2 className="text-3xl font-semibold tracking-tight">{title}</h2>
       <p className="mt-2 text-ink-soft">{body}</p>
-      {mint && <p className="mt-2 font-mono text-xs break-all text-ink-faint">{mint}</p>}
+      {mint && <p className="mt-2 font-mono text-xs break-all text-faint">{mint}</p>}
       <div className="mt-4">
         <PairingNote />
       </div>
-      <Link href="/" className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] underline">
+      <Link href="/" className="btn btn-dark mt-6 h-11 px-5 text-sm">
         Back to the tape
       </Link>
     </div>

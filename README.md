@@ -135,7 +135,8 @@ cluster.
 - xStocks do not exist on devnet. To exercise a launch, bind a ticker to a devnet stand-in
   mint plus a devnet LaunchLab GlobalConfig whose `mintB` is that mint. The UI shows a banner
   that devnet quotes are stand-ins.
-- `NEXT_PUBLIC_RPC_URL` may be empty in `next dev` (falls back to the public devnet RPC).
+- `NEXT_PUBLIC_RPC_URL` may be empty: devnet falls back to the public devnet RPC, in dev and in
+  production builds (so a Vercel devnet deploy can read the chain). Set your own for real traffic.
 - Without `IRYS_PRIVATE_KEY`, metadata is a dev-only inline data URI. Metaplex caps the URI at
   200 bytes, so the image is dropped and the blurb trimmed, and a banner says so.
 - Fixture closes are allowed.
@@ -156,7 +157,7 @@ Documented line by line in [`.env.example`](.env.example).
 | Variable | Side | Purpose |
 | --- | --- | --- |
 | `NEXT_PUBLIC_SOLANA_CLUSTER` | client | `devnet` (default) or `mainnet-beta`. Write cluster and ticket reads. |
-| `NEXT_PUBLIC_RPC_URL` | client | RPC for that cluster. Required on mainnet. Devnet falls back to the public RPC only in `next dev`. |
+| `NEXT_PUBLIC_RPC_URL` | client | RPC for that cluster. Required on mainnet (no fallback). Devnet falls back to the public devnet RPC. |
 | `NEXT_PUBLIC_PLATFORM_ID` | client | Your LaunchLab platform config. Empty means Sign is disabled with "platform not configured". |
 | `NEXT_PUBLIC_<X>_MINT` | client | xStock mint for each of NVDAX, AAPLX, TSLAX, MSFTX, AMZNX, GOOGLX, METAX, SPYX, QQQX. |
 | `NEXT_PUBLIC_<X>_CONFIG` | client | LaunchLab GlobalConfig quoted in that mint. Empty means the name can never launch. |
@@ -164,6 +165,20 @@ Documented line by line in [`.env.example`](.env.example).
 | `IRYS_PRIVATE_KEY` | server | Pays for Irys metadata storage (base58 or JSON byte array). Unset means dev data URI, and mainnet launch is disabled. |
 | `STOCK_DATA_URL` | server | Daily closes URL template (`{symbol}` / `{symbol_lower}`). CSV with Date/Close[/Volume], or JSON rows. Unset means the fixture (dev only). |
 | `PRINT_FIXTURE` | server | Dev only. `green` serves the green-only fixture. |
+
+## Deploying on Vercel
+
+1. **Deploy the branch that has the app.** Vercel builds the production branch (usually
+   `main`). If `main` holds only the initial README, the deploy "succeeds" with nothing in it and
+   every URL answers `404: NOT_FOUND`. Merge the app into `main`, or point Vercel's production
+   branch at the branch that has it (Project → Settings → Git → Production Branch).
+2. **Framework preset.** `vercel.json` pins `"framework": "nextjs"`. A project first imported from
+   a README-only repo gets the "Other" preset, which serves a static folder and 404s a Next.js
+   app; the pin overrides that. If the project has a custom Output Directory set, clear it.
+3. **Env vars.** Add the ones you need under Project → Settings → Environment Variables, then
+   redeploy. `NEXT_PUBLIC_*` values are baked in at build time, so changing them needs a new build.
+   With none set, the deploy runs on devnet with the labeled fixture, and listing stays hidden
+   until a platform and a quote config are bound.
 
 ## Operator scripts
 

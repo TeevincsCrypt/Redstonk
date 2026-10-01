@@ -6,6 +6,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { Countdown } from "./countdown";
 import { Banner, PairingNote, QuoteDisclaimer } from "./notes";
 import { WalletButton } from "./wallet-button";
+import { PageHero } from "./page-hero";
 import { fetchPrint, usePrint } from "./use-print";
 import { CLUSTER, IS_MAINNET, PLATFORM_ID, explorerAddressUrl, explorerTxUrl } from "@/lib/env";
 import { formatEt, formatPct, formatUnits, formatUsd, shortAddress } from "@/lib/format";
@@ -30,12 +31,9 @@ import { UNDERLYING } from "@/lib/copy";
 
 type Step = 1 | 2 | 3;
 
-const btn =
-  "w-full border-2 border-ink px-5 py-3.5 font-mono text-sm uppercase tracking-[0.14em] transition-colors disabled:border-ink-faint disabled:text-ink-faint";
-const btnPrimary = `${btn} bg-ink text-paper hover:bg-down hover:border-down disabled:bg-transparent`;
-const btnGhost = `${btn} hover:bg-ink hover:text-paper`;
-const input =
-  "mt-1 w-full border border-ink bg-paper px-3 py-2.5 text-lg outline-none focus:border-2 focus:border-ink disabled:text-ink-faint";
+const btnPrimary = "btn btn-dark h-12 w-full px-5 text-sm";
+const btnGhost = "btn btn-outline h-12 px-5 text-sm";
+const input = "field mt-1.5";
 
 export function LaunchFlow({
   initial,
@@ -81,7 +79,12 @@ export function LaunchFlow({
   if (result) return <Success result={result} print={print} />;
 
   return (
-    <div className="mx-auto max-w-xl">
+    <>
+      <PageHero eyebrow="List" title="List against the print">
+        One coin, one quote, one signature. The quote is whatever closed worst. There is no picker.
+      </PageHero>
+      <div className="relative z-10 mx-auto -mt-20 max-w-2xl px-4 md:px-8">
+      <div className="card p-5 md:p-8">
       {nowOverride && <Banner tone="warn">Dev clock override: {nowOverride}</Banner>}
       {print.source?.kind === "fixture" && <Banner tone="warn">{print.source.label}</Banner>}
       {!irysReady &&
@@ -101,15 +104,15 @@ export function LaunchFlow({
 
       {step === 1 && (
         <section aria-labelledby="step1">
-          <h1 id="step1" className="text-4xl font-semibold">
+          <h1 id="step1" className="text-2xl font-semibold tracking-tight md:text-3xl">
             The coin
           </h1>
-          <p className="mt-1 text-ink-soft">
+          <p className="mt-1.5 text-sm leading-relaxed text-mute">
             Fixed supply of 1,000,000,000 at 6 decimals. No team allocation, no mint or freeze authority kept.
           </p>
           <fieldset disabled={locked} className="mt-5 space-y-5">
             <label className="block">
-              <span className="kicker">Name</span>
+              <span className="eyebrow text-mute">Name</span>
               <input
                 className={input}
                 value={name}
@@ -120,7 +123,7 @@ export function LaunchFlow({
               <FieldNote error={showErrors ? errors.name : undefined}>Up to {NAME_MAX_BYTES} bytes.</FieldNote>
             </label>
             <label className="block">
-              <span className="kicker">Ticker</span>
+              <span className="eyebrow text-mute">Ticker</span>
               <input
                 className={`${input} font-mono uppercase`}
                 value={symbol}
@@ -135,7 +138,7 @@ export function LaunchFlow({
               </FieldNote>
             </label>
             <label className="block">
-              <span className="kicker">Blurb</span>
+              <span className="eyebrow text-mute">Blurb</span>
               <textarea
                 className={`${input} min-h-24 text-base`}
                 value={description}
@@ -187,24 +190,26 @@ export function LaunchFlow({
         />
       )}
 
-      <div className="mt-8">
+      </div>
+      <div className="mt-6">
         <PairingNote xStock={winner?.xStock ?? print.print?.xStock} ticker={winner?.ticker ?? print.print?.ticker} />
       </div>
       <QuoteDisclaimer />
-    </div>
+      </div>
+    </>
   );
 }
 
 function StepRail({ step }: { step: Step }) {
   const items = ["Coin", "Quote", "Sign"];
   return (
-    <ol className="mb-5 grid grid-cols-3 border-y border-ink">
+    <ol className="mb-6 grid grid-cols-3 gap-1 rounded-full bg-canvas p-1 ring-1 ring-line">
       {items.map((label, i) => {
         const n = (i + 1) as Step;
-        const state = n === step ? "bg-ink text-paper" : n < step ? "text-ink" : "text-ink-faint";
+        const state = n === step ? "bg-ink text-white shadow-sm" : n < step ? "text-ink" : "text-faint";
         return (
-          <li key={label} className={`py-2 text-center font-mono text-xs uppercase tracking-[0.14em] ${state}`}>
-            {n}. {label}
+          <li key={label} className={`rounded-full py-2 text-center text-xs font-medium ${state}`}>
+            {n < step ? "✓" : n}. {label}
           </li>
         );
       })}
@@ -220,7 +225,7 @@ function LockedNotice({ print, skewMs, onBell }: { print: PrintResponse; skewMs:
     body = (
       <>
         Listings open at the 16:00 ET close ({formatEt(print.nextClose)}) in{" "}
-        <Countdown target={print.nextClose} skewMs={skewMs} onDone={onBell} className="text-down" />.
+        <Countdown target={print.nextClose} skewMs={skewMs} onDone={onBell} className="text-brand" />.
       </>
     );
   } else if (print.verdict === "no-curve-config") {
@@ -236,18 +241,21 @@ function LockedNotice({ print, skewMs, onBell }: { print: PrintResponse; skewMs:
     );
   }
   return (
-    <div className="mb-6 border-2 border-ink p-4">
-      <p className="text-2xl font-semibold">{title}</p>
-      <p className="mt-1 text-ink-soft">{body}</p>
+    <div className="mb-6 rounded-2xl border border-[#ffd2d8] bg-[linear-gradient(180deg,#fff0f2,#ffffff)] p-4">
+      <p className="flex items-center gap-2 text-lg font-semibold">
+        <span className="h-2 w-2 rounded-full bg-brand" aria-hidden />
+        {title}
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-ink-soft">{body}</p>
     </div>
   );
 }
 
 function FieldNote({ error, children }: { error?: string; children: React.ReactNode }) {
   return error ? (
-    <span className="mt-1 block text-sm text-down">{error}</span>
+    <span className="mt-1.5 block text-sm text-brand">{error}</span>
   ) : (
-    <span className="mt-1 block text-xs text-ink-faint">{children}</span>
+    <span className="mt-1.5 block text-xs text-faint">{children}</span>
   );
 }
 
@@ -262,21 +270,21 @@ function ImageField({
 }) {
   return (
     <div>
-      <span className="kicker">Image</span>
+      <span className="eyebrow text-mute">Image</span>
       <div className="mt-1 flex items-center gap-4">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center border border-ink bg-paper-deep">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-line bg-blush">
           {image ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={image} alt="Coin image preview" className="h-full w-full object-cover" />
           ) : (
-            <span className="font-mono text-xs text-ink-faint">none</span>
+            <span className="font-mono text-xs text-faint">none</span>
           )}
         </div>
         <div className="min-w-0 flex-1">
           <input
             type="file"
             accept={IMAGE_TYPES.join(",")}
-            className="block w-full text-sm file:mr-3 file:border file:border-ink file:bg-paper file:px-3 file:py-1.5 file:font-mono file:text-xs file:uppercase"
+            className="block w-full text-sm text-mute file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-ink file:px-3.5 file:py-2 file:text-xs file:font-medium file:text-white"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (!file) return onChange(null, null);
@@ -289,7 +297,7 @@ function ImageField({
             }}
           />
           {image && (
-            <button type="button" className="mt-1 font-mono text-xs underline" onClick={() => onChange(null, null)}>
+            <button type="button" className="mt-1.5 text-xs text-brand underline" onClick={() => onChange(null, null)}>
               Remove
             </button>
           )}
@@ -329,8 +337,8 @@ function useCurveSheet(print: PrintResponse) {
 
 function Row({ k, v, mono = false }: { k: string; v: React.ReactNode; mono?: boolean }) {
   return (
-    <div className="grid grid-cols-[8.5rem_1fr] gap-3 border-b border-ink/20 py-2 text-sm">
-      <dt className="text-ink-soft">{k}</dt>
+    <div className="grid grid-cols-[8rem_1fr] gap-3 border-b border-line py-2.5 text-sm last:border-b-0">
+      <dt className="text-mute">{k}</dt>
       <dd className={`min-w-0 break-words ${mono ? "font-mono text-xs leading-5" : ""}`}>{v}</dd>
     </div>
   );
@@ -342,20 +350,20 @@ function ConfirmQuote({ print, onBack, onConfirm }: { print: PrintResponse; onBa
   const q = sheet?.quote;
   return (
     <section aria-labelledby="step2">
-      <h1 id="step2" className="text-4xl font-semibold">
+      <h1 id="step2" className="text-2xl font-semibold tracking-tight md:text-3xl">
         The quote
       </h1>
-      <p className="mt-1 text-ink-soft">
+      <p className="mt-1.5 text-sm leading-relaxed text-mute">
         One quote per US trading day: the worst close. There is no picker. This coin will trade against{" "}
         {w.xStock} or not at all.
       </p>
 
-      <div className="mt-5 border-2 border-ink p-4">
+      <div className="card-blush mt-5 p-5">
         <div className="flex items-baseline justify-between gap-3">
-          <span className="font-mono text-xl">{w.xStock}</span>
+          <span className="font-mono text-xl font-semibold">{w.xStock}</span>
           <span className="text-sm text-ink-soft">{UNDERLYING[w.ticker] ?? w.ticker}</span>
         </div>
-        <div className="mt-1 text-6xl leading-none font-semibold text-down tabular">{formatPct(w.changePct)}</div>
+        <div className="mt-2 text-6xl leading-none font-semibold tracking-tight text-brand tabular">{formatPct(w.changePct)}</div>
         <dl className="mt-4">
           <Row k="Close" v={<span className="font-mono tabular">{formatUsd(w.close)}</span>} />
           <Row k="Prior close" v={<span className="font-mono tabular">{formatUsd(w.prevClose)}</span>} />
@@ -367,9 +375,9 @@ function ConfirmQuote({ print, onBack, onConfirm }: { print: PrintResponse; onBa
       </div>
 
       <div className="mt-4">
-        <h2 className="kicker">Issuer controls on the quote</h2>
-        {loading && <p className="mt-1 text-sm text-ink-faint">Reading the mint…</p>}
-        {error && <p className="mt-1 text-sm text-down">{error}</p>}
+        <h2 className="eyebrow text-mute">Issuer controls on the quote</h2>
+        {loading && <p className="mt-1 text-sm text-faint">Reading the mint…</p>}
+        {error && <p className="mt-1 text-sm text-brand">{error}</p>}
         {q && (
           <dl className="mt-1">
             <Row k="Token program" v={q.isToken2022 ? "Token-2022" : "SPL Token"} />
@@ -379,13 +387,13 @@ function ConfirmQuote({ print, onBack, onConfirm }: { print: PrintResponse; onBa
             {q.uiMultiplier !== 1 && <Row k="UI multiplier" v={q.uiMultiplier.toFixed(6)} mono />}
           </dl>
         )}
-        <p className="mt-2 text-xs text-ink-faint">
+        <p className="mt-2 text-xs text-faint">
           Read live from {CLUSTER}. An issuer with these powers can freeze, pause, or move the quote token.
         </p>
       </div>
 
       <div className="mt-6 grid grid-cols-[auto_1fr] gap-3">
-        <button type="button" className={`${btnGhost} w-auto px-4`} onClick={onBack}>
+        <button type="button" className={btnGhost} onClick={onBack}>
           Back
         </button>
         <button type="button" className={btnPrimary} onClick={onConfirm} disabled={!sheet && !error}>
@@ -398,7 +406,7 @@ function ConfirmQuote({ print, onBack, onConfirm }: { print: PrintResponse; onBa
 
 function AddressLink({ addr }: { addr: string }) {
   return (
-    <a href={explorerAddressUrl(addr)} target="_blank" rel="noreferrer" className="underline decoration-ink/30">
+    <a href={explorerAddressUrl(addr)} target="_blank" rel="noreferrer" className="underline decoration-brand/30">
       {addr}
     </a>
   );
@@ -491,19 +499,19 @@ function SignStep({
 
   return (
     <section aria-labelledby="step3">
-      <h1 id="step3" className="text-4xl font-semibold">
+      <h1 id="step3" className="text-2xl font-semibold tracking-tight md:text-3xl">
         Fees and sign
       </h1>
-      <p className="mt-1 text-ink-soft">
+      <p className="mt-1.5 text-sm leading-relaxed text-mute">
         {listing.name || "Your coin"} <span className="font-mono">${listing.symbol}</span> against{" "}
         <span className="font-mono">{w.xStock}</span> on Raydium LaunchLab, {CLUSTER}.
       </p>
 
-      {loading && <p className="mt-4 text-sm text-ink-faint">Reading config, platform, and quote from {CLUSTER}…</p>}
+      {loading && <p className="mt-4 text-sm text-faint">Reading config, platform, and quote from {CLUSTER}…</p>}
 
       {sheet && (
         <>
-          <h2 className="kicker mt-5">Fee line</h2>
+          <h2 className="eyebrow mt-6 text-mute">Fee line</h2>
           <dl className="mt-1">
             {fees ? (
               <>
@@ -523,7 +531,7 @@ function SignStep({
             )}
           </dl>
 
-          <h2 className="kicker mt-5">Curve</h2>
+          <h2 className="eyebrow mt-6 text-mute">Curve</h2>
           <dl className="mt-1">
             <Row k="Supply" v="1,000,000,000 · 6 decimals" />
             <Row
@@ -556,7 +564,7 @@ function SignStep({
             <Row k="Refund at open" v="None. Unfilled curves keep trading under LaunchLab rules." />
           </dl>
 
-          <h2 className="kicker mt-5">First buy (optional)</h2>
+          <h2 className="eyebrow mt-6 text-mute">First buy (optional)</h2>
           <label className="mt-1 block">
             <div className="flex items-center gap-2">
               <input
@@ -569,7 +577,7 @@ function SignStep({
               />
               <span className="font-mono text-sm">{w.xStock}</span>
             </div>
-            <span className="mt-1 block text-xs text-ink-faint">
+            <span className="mt-1 block text-xs text-faint">
               {balance != null && quote
                 ? `Balance ${rawToUi(balance, quote.decimals, quote.uiMultiplier).toLocaleString("en-US", { maximumFractionDigits: 6 })} ${w.xStock}. `
                 : ""}
@@ -580,25 +588,26 @@ function SignStep({
       )}
 
       {blockers.length > 0 && (
-        <ul className="mt-5 space-y-1 border-l-2 border-down pl-3 text-sm text-down">
+        <ul className="mt-5 space-y-1 rounded-2xl border border-[#ffd2d8] bg-blush px-4 py-3 text-sm text-brand-deep">
           {blockers.map((b) => (
             <li key={b}>{b}</li>
           ))}
         </ul>
       )}
       {sheetError && (
-        <button type="button" className="mt-2 font-mono text-xs underline" onClick={() => void reload()}>
+        <button type="button" className="mt-2 text-xs text-brand underline" onClick={() => void reload()}>
           Retry reading the chain
         </button>
       )}
 
       {stage && !failure && (
-        <p className="mt-5 font-mono text-sm" aria-live="polite">
+        <p className="mt-5 flex items-center gap-2 text-sm text-ink-soft" aria-live="polite">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-brand" aria-hidden />
           {STAGE_LABEL[stage.stage]}…{stage.detail ? ` ${stage.stage === "confirming" ? shortAddress(stage.detail, 6) : stage.detail}` : ""}
         </p>
       )}
       {failure && (
-        <div className="mt-5 border border-down p-3 text-sm text-down" role="alert">
+        <div className="mt-5 rounded-2xl border border-[#ffd2d8] bg-blush p-4 text-sm text-brand-deep" role="alert">
           <p>{failure.message}</p>
           {failure.logs.length > 0 && (
             <details className="mt-2">
@@ -614,14 +623,14 @@ function SignStep({
       <div className="mt-6 space-y-3">
         {!wallet.publicKey && <WalletButton block />}
         <div className="grid grid-cols-[auto_1fr] gap-3">
-          <button type="button" className={`${btnGhost} w-auto px-4`} onClick={onBack} disabled={running}>
+          <button type="button" className={btnGhost} onClick={onBack} disabled={running}>
             Back
           </button>
           <button type="button" className={btnPrimary} onClick={() => void sign()} disabled={!canSign}>
             {running ? "Working…" : "Sign listing"}
           </button>
         </div>
-        <p className="text-xs text-ink-faint">
+        <p className="text-xs text-faint">
           Your wallet shows every transaction before it is sent. Nothing is sent that you did not sign.
         </p>
       </div>
@@ -631,11 +640,12 @@ function SignStep({
 
 function Success({ result, print }: { result: LaunchResult; print: PrintResponse }) {
   return (
-    <div className="mx-auto max-w-xl">
-      <h1 className="text-5xl font-semibold">Listed.</h1>
-      <p className="mt-2 text-ink-soft">
+    <>
+      <PageHero eyebrow="Signed and sent" title="Listed.">
         Your coin is on a Raydium LaunchLab curve against {print.winner?.xStock ?? "today's print"} on {CLUSTER}.
-      </p>
+      </PageHero>
+      <div className="relative z-10 mx-auto -mt-20 max-w-2xl px-4 md:px-8">
+      <div className="card p-5 md:p-8">
       <dl className="mt-5">
         <Row k="Mint" v={<AddressLink addr={result.mint} />} mono />
         <Row k="Pool" v={<AddressLink addr={result.poolId} />} mono />
@@ -644,7 +654,7 @@ function Success({ result, print }: { result: LaunchResult; print: PrintResponse
             key={sig}
             k={result.signatures.length > 1 ? `Signature ${i + 1}` : "Signature"}
             v={
-              <a href={explorerTxUrl(sig)} target="_blank" rel="noreferrer" className="underline decoration-ink/30">
+              <a href={explorerTxUrl(sig)} target="_blank" rel="noreferrer" className="underline decoration-brand/30">
                 {sig}
               </a>
             }
@@ -654,22 +664,24 @@ function Success({ result, print }: { result: LaunchResult; print: PrintResponse
         <Row k="Metadata" v={result.metadataUri.startsWith("data:") ? "inline data URI (dev)" : result.metadataUri} mono />
       </dl>
       {result.metadataNotes.map((n) => (
-        <p key={n} className="mt-2 text-xs text-ink-faint">
+        <p key={n} className="mt-2 text-xs text-faint">
           {n}
         </p>
       ))}
       {!result.poolFound && (
-        <p className="mt-3 text-sm text-down">
+        <p className="mt-3 text-sm text-brand">
           The pool account did not show up on your RPC within 30 seconds. The ticket page reads it once it does.
         </p>
       )}
-      <Link href={`/coin/${result.mint}`} className={`${btnPrimary} mt-6 block text-center`}>
-        Open the ticket
+      <Link href={`/coin/${result.mint}`} className={`${btnPrimary} mt-6`}>
+        Open the ticket <span aria-hidden>→</span>
       </Link>
+      </div>
       <div className="mt-6">
         <PairingNote xStock={print.winner?.xStock} ticker={print.winner?.ticker} />
       </div>
       <QuoteDisclaimer />
-    </div>
+      </div>
+    </>
   );
 }

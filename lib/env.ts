@@ -8,16 +8,14 @@ export const CLUSTER: Cluster =
 
 export const IS_MAINNET = CLUSTER === "mainnet-beta";
 
-const IS_DEV = process.env.NODE_ENV !== "production";
-
 const PUBLIC_DEVNET_RPC = "https://api.devnet.solana.com";
 
 /**
- * RPC for the write cluster. Falls back to the public devnet endpoint only while running
- * `next dev` against devnet. Mainnet always needs an explicit NEXT_PUBLIC_RPC_URL.
+ * RPC for the write cluster. On devnet it falls back to the public devnet endpoint, including in
+ * production builds (a Vercel preview of a devnet deploy is still devnet, and nothing of value is
+ * at stake there). Mainnet-beta never falls back: it needs an explicit NEXT_PUBLIC_RPC_URL.
  */
-export const RPC_URL: string =
-  process.env.NEXT_PUBLIC_RPC_URL || (IS_DEV && CLUSTER === "devnet" ? PUBLIC_DEVNET_RPC : "");
+export const RPC_URL: string = process.env.NEXT_PUBLIC_RPC_URL || (CLUSTER === "devnet" ? PUBLIC_DEVNET_RPC : "");
 
 export const PLATFORM_ID: string = (process.env.NEXT_PUBLIC_PLATFORM_ID ?? "").trim();
 
